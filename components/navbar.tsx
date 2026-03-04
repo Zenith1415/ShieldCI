@@ -25,7 +25,7 @@ export function Navbar() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-[#1C1C1C]/80 backdrop-blur-xl border-b border-[#6A0DAD]/10"
+          ? "bg-[#0A0A0A]/80 backdrop-blur-xl border-b border-[#5A0B91]/10"
           : "bg-transparent"
       }`}
     >
@@ -35,7 +35,7 @@ export function Navbar() {
           <span className="text-xl font-bold tracking-tight text-white">
             Shield
           </span>
-          <span className="text-xl font-bold tracking-tight text-[#6A0DAD]">
+          <span className="text-xl font-bold tracking-tight text-[#5A0B91]">
             CI
           </span>
         </Link>
@@ -63,7 +63,7 @@ export function Navbar() {
           </Link>
           <Link
             href="/signup"
-            className="rounded-full bg-[#6A0DAD] px-5 py-2 text-sm font-medium text-white transition-all hover:bg-[#7b1fc4] hover:shadow-[0_0_20px_rgba(106,13,173,0.4)]"
+            className="rounded-full bg-[#5A0B91] px-5 py-2 text-sm font-medium text-white transition-all hover:bg-[#7b1fc4] hover:shadow-[0_0_20px_rgba(106,13,173,0.4)]"
           >
             Get Started
           </Link>
@@ -81,7 +81,7 @@ export function Navbar() {
 
       {/* Mobile Menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-[#6A0DAD]/20 bg-[#1C1C1C]/95 backdrop-blur-xl">
+        <div className="lg:hidden border-t border-[#5A0B91]/20 bg-[#0A0A0A]/95 backdrop-blur-xl">
           <div className="flex flex-col gap-4 px-6 py-6">
             {navLinks.map((link) => (
               <a
@@ -93,13 +93,13 @@ export function Navbar() {
                 {link.label}
               </a>
             ))}
-            <div className="mt-4 flex flex-col gap-3 border-t border-[#6A0DAD]/20 pt-4">
+            <div className="mt-4 flex flex-col gap-3 border-t border-[#5A0B91]/20 pt-4">
               <Link href="/login" className="text-base text-[#a0a0a0] hover:text-white">
                 Sign in
               </Link>
               <Link
                 href="/signup"
-                className="rounded-full bg-[#6A0DAD] px-4 py-2.5 text-center text-sm font-medium text-white"
+                className="rounded-full bg-[#5A0B91] px-4 py-2.5 text-center text-sm font-medium text-white"
               >
                 Get Started
               </Link>

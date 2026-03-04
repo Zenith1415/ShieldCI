@@ -23,7 +23,7 @@ const footerLinks = {
 
 export function Footer() {
   return (
-    <footer className="relative border-t border-[#6A0DAD]/10 px-6 py-16 md:px-8">
+    <footer className="relative border-t border-[#5A0B91]/10 px-6 py-16 md:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Brand Column */}
@@ -32,7 +32,7 @@ export function Footer() {
               <span className="text-xl font-bold tracking-tight text-white">
                 Shield
               </span>
-              <span className="text-xl font-bold tracking-tight text-[#6A0DAD]">
+              <span className="text-xl font-bold tracking-tight text-[#5A0B91]">
                 CI
               </span>
             </Link>
@@ -53,7 +53,7 @@ export function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-sm text-[#808080] transition-colors hover:text-[#c9a0ff]"
+                      className="text-sm text-[#808080] transition-colors hover:text-[#b388e0]"
                     >
                       {link.label}
                     </a>
@@ -65,18 +65,18 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[#6A0DAD]/10 pt-8 sm:flex-row">
+        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-[#5A0B91]/10 pt-8 sm:flex-row">
           <p className="text-sm text-[#808080]">
             {"2026 ShieldCI. All rights reserved."}
           </p>
           <div className="flex gap-6">
-            <a href="#" className="text-sm text-[#808080] hover:text-[#c9a0ff] transition-colors">
+            <a href="#" className="text-sm text-[#808080] hover:text-[#b388e0] transition-colors">
               Terms
             </a>
-            <a href="#" className="text-sm text-[#808080] hover:text-[#c9a0ff] transition-colors">
+            <a href="#" className="text-sm text-[#808080] hover:text-[#b388e0] transition-colors">
               Privacy
             </a>
-            <a href="#" className="text-sm text-[#808080] hover:text-[#c9a0ff] transition-colors">
+            <a href="#" className="text-sm text-[#808080] hover:text-[#b388e0] transition-colors">
               Cookies
             </a>
           </div>

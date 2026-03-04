@@ -10,7 +10,7 @@ import { ScrollAnimator } from "@/components/scroll-animator"
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#1C1C1C]">
+    <main className="min-h-screen bg-[#0A0A0A]">
       <Navbar />
       <Hero />
       <ProblemSection />

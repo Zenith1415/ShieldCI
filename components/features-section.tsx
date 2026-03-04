@@ -8,10 +8,10 @@ const features = [
       "Deep Semgrep scans against industry-standard vulnerability patterns on every commit and PR.",
     visual: (
       <div className="font-mono text-[11px] leading-relaxed text-[#505050] select-none">
-        <div><span className="text-[#6A0DAD]">$</span> semgrep --config owasp</div>
-        <div className="text-[#c9a0ff]/60">{'> scanning 247 files...'}</div>
+        <div><span className="text-[#5A0B91]">$</span> semgrep --config owasp</div>
+        <div className="text-[#b388e0]/60">{'> scanning 247 files...'}</div>
         <div className="text-red-400/70">{'> 3 critical findings'}</div>
-        <div className="text-[#6A0DAD]/70">{'> generating patches...'}</div>
+        <div className="text-[#5A0B91]/70">{'> generating patches...'}</div>
       </div>
     ),
     span: "lg:col-span-2",
@@ -45,13 +45,13 @@ const features = [
       "A brand new pull request with the fix, severity level, OWASP category, and full explanation. Ready to merge.",
     visual: (
       <div className="flex items-center gap-3 select-none">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#6A0DAD]/20 border border-[#6A0DAD]/30">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#5A0B91]/20 border border-[#5A0B91]/30">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-            <path d="M7.177 3.073L9.573.677A.25.25 0 0110 .854v4.792a.25.25 0 01-.427.177L7.177 3.427a.25.25 0 010-.354zM3.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122v5.256a2.251 2.251 0 11-1.5 0V5.372A2.25 2.25 0 011.5 3.25zM11 2.5h-1V4h1a1 1 0 011 1v5.628a2.251 2.251 0 101.5 0V5A2.5 2.5 0 0011 2.5zm1 10.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.75 12a.75.75 0 100 1.5.75.75 0 000-1.5z" fill="#c9a0ff" fillOpacity="0.6"/>
+            <path d="M7.177 3.073L9.573.677A.25.25 0 0110 .854v4.792a.25.25 0 01-.427.177L7.177 3.427a.25.25 0 010-.354zM3.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122v5.256a2.251 2.251 0 11-1.5 0V5.372A2.25 2.25 0 011.5 3.25zM11 2.5h-1V4h1a1 1 0 011 1v5.628a2.251 2.251 0 101.5 0V5A2.5 2.5 0 0011 2.5zm1 10.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.75 12a.75.75 0 100 1.5.75.75 0 000-1.5z" fill="#b388e0" fillOpacity="0.6"/>
           </svg>
         </div>
         <div className="text-[11px] font-mono">
-          <div className="text-[#c9a0ff]/70">fix/sql-injection-patch</div>
+          <div className="text-[#b388e0]/70">fix/sql-injection-patch</div>
           <div className="text-[#404040]">ready to merge</div>
         </div>
       </div>
@@ -65,10 +65,10 @@ const features = [
     description:
       "Explanatory comments posted directly on the vulnerable line in your original PR. Review in context.",
     visual: (
-      <div className="rounded-lg border border-[#ffffff08] bg-[#0d0d0d] p-3 font-mono text-[10px] select-none">
+      <div className="rounded-lg border border-[#ffffff08] bg-[#080808] p-3 font-mono text-[10px] select-none">
         <div className="flex items-center gap-2 mb-2">
-          <div className="h-4 w-4 rounded-full bg-[#6A0DAD]/30 flex items-center justify-center text-[8px] text-[#c9a0ff]">S</div>
-          <span className="text-[#c9a0ff]/60">ShieldCI Bot</span>
+          <div className="h-4 w-4 rounded-full bg-[#5A0B91]/30 flex items-center justify-center text-[8px] text-[#b388e0]">S</div>
+          <span className="text-[#b388e0]/60">ShieldCI Bot</span>
           <span className="text-[#303030] ml-auto">now</span>
         </div>
         <div className="text-[#606060] leading-relaxed">
@@ -87,8 +87,8 @@ const features = [
     visual: (
       <div className="font-mono text-[11px] leading-relaxed select-none">
         <div className="text-[#404040]">permissions:</div>
-        <div className="text-[#c9a0ff]/50">{'  contents: read'}</div>
-        <div className="text-[#c9a0ff]/50">{'  pull-requests: write'}</div>
+        <div className="text-[#b388e0]/50">{'  contents: read'}</div>
+        <div className="text-[#b388e0]/50">{'  pull-requests: write'}</div>
         <div className="text-emerald-400/40 mt-1">{'+ security-events: write'}</div>
         <div className="text-emerald-400/40">{'+ actions: none'}</div>
       </div>
@@ -109,7 +109,7 @@ const features = [
             className="w-3 rounded-sm transition-all duration-300"
             style={{
               height: `${h}%`,
-              backgroundColor: h > 70 ? "#6A0DAD" : h > 45 ? "#6A0DAD80" : "#6A0DAD30",
+              backgroundColor: h > 70 ? "#5A0B91" : h > 45 ? "#5A0B9180" : "#5A0B9130",
             }}
           />
         ))}
@@ -126,12 +126,12 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-7xl">
         {/* Section Header */}
         <div className="text-center mb-20">
-          <span className="inline-block text-sm font-medium uppercase tracking-widest text-[#6A0DAD] mb-4">
+          <span className="inline-block text-sm font-medium uppercase tracking-widest text-[#5A0B91] mb-4">
             Features
           </span>
           <h2 className="text-balance text-4xl font-semibold tracking-tighter text-white sm:text-5xl md:text-6xl">
             Everything you need to{" "}
-            <span className="bg-gradient-to-r from-[#6A0DAD] to-[#c9a0ff] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#5A0B91] to-[#b388e0] bg-clip-text text-transparent">
               ship securely
             </span>
           </h2>
@@ -146,24 +146,24 @@ export function FeaturesSection() {
           {features.map((feature, i) => (
             <div
               key={feature.tag}
-              className={`scroll-animate group relative rounded-2xl border border-[#ffffff06] bg-[#141414] overflow-hidden
-                transition-all duration-700 hover:border-[#6A0DAD]/25
+              className={`scroll-animate group relative rounded-2xl border border-[#ffffff06] bg-[#0f0f0f] overflow-hidden
+                transition-all duration-700 hover:border-[#5A0B91]/25
                 ${feature.span} ${feature.height}`}
               style={{ transitionDelay: `${i * 60}ms` }}
             >
               {/* Left accent line */}
-              <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#6A0DAD]/40 via-[#6A0DAD]/10 to-transparent
+              <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#5A0B91]/40 via-[#5A0B91]/10 to-transparent
                 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
               <div className="p-8 flex flex-col h-full relative z-10">
                 {/* Tag */}
-                <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#6A0DAD] mb-6 block">
+                <span className="text-[10px] font-mono font-bold tracking-[0.2em] text-[#5A0B91] mb-6 block">
                   {feature.tag}
                 </span>
 
                 {/* Visual element */}
-                <div className="mb-6 p-4 rounded-xl bg-[#0d0d0d] border border-[#ffffff04] 
-                  transition-all duration-500 group-hover:border-[#6A0DAD]/10 group-hover:bg-[#0f0a14]">
+                <div className="mb-6 p-4 rounded-xl bg-[#080808] border border-[#ffffff04] 
+                  transition-all duration-500 group-hover:border-[#5A0B91]/10 group-hover:bg-[#0f0a14]">
                   {feature.visual}
                 </div>
 
@@ -177,7 +177,7 @@ export function FeaturesSection() {
 
                 {/* Bottom corner glow on hover */}
                 <div className="absolute bottom-0 right-0 w-32 h-32 rounded-tl-full
-                  bg-[radial-gradient(circle_at_100%_100%,#6A0DAD08,transparent_70%)]
+                  bg-[radial-gradient(circle_at_100%_100%,#5A0B9108,transparent_70%)]
                   opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
               </div>
             </div>

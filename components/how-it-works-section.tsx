@@ -49,17 +49,17 @@ export function HowItWorksSection() {
   return (
     <section id="how-it-works" className="relative py-32 px-6 md:px-8 overflow-hidden">
       {/* Background glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#6A0DAD]/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#5A0B91]/5 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="relative mx-auto max-w-4xl">
         {/* Section Header */}
         <div className="text-center mb-20">
-          <span className="text-sm font-medium uppercase tracking-widest text-[#6A0DAD]">
+          <span className="text-sm font-medium uppercase tracking-widest text-[#5A0B91]">
             How It Works
           </span>
           <h2 className="mt-4 text-balance text-4xl font-semibold tracking-tighter text-white sm:text-5xl md:text-6xl">
             Seven steps to{" "}
-            <span className="bg-gradient-to-r from-[#6A0DAD] to-[#c9a0ff] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#5A0B91] to-[#b388e0] bg-clip-text text-transparent">
               zero vulnerabilities
             </span>
           </h2>
@@ -68,7 +68,7 @@ export function HowItWorksSection() {
         {/* Timeline */}
         <div className="relative">
           {/* Vertical line */}
-          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-[#6A0DAD]/50 via-[#6A0DAD]/20 to-transparent md:left-1/2 md:-translate-x-px" />
+          <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-[#5A0B91]/50 via-[#5A0B91]/20 to-transparent md:left-1/2 md:-translate-x-px" />
 
           {steps.map((step, i) => (
             <div
@@ -87,7 +87,7 @@ export function HowItWorksSection() {
                     i % 2 === 0 ? "md:text-right md:pr-16" : "md:text-left md:pl-16"
                   }`}
                 >
-                  <span className="text-sm font-mono font-bold text-[#6A0DAD]">
+                  <span className="text-sm font-mono font-bold text-[#5A0B91]">
                     {step.number}
                   </span>
                   <h3 className="mt-1 text-xl font-semibold tracking-tight text-white">
@@ -100,7 +100,7 @@ export function HowItWorksSection() {
 
                 {/* Dot */}
                 <div className="absolute left-6 md:left-1/2 -translate-x-1/2 flex h-3 w-3 items-center justify-center">
-                  <div className="h-3 w-3 rounded-full bg-[#6A0DAD] shadow-[0_0_12px_rgba(106,13,173,0.6)]" />
+                  <div className="h-3 w-3 rounded-full bg-[#5A0B91] shadow-[0_0_12px_rgba(106,13,173,0.6)]" />
                 </div>
 
                 {/* Spacer for opposite side */}

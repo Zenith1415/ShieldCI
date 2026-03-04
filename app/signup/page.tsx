@@ -27,31 +27,31 @@ export default function SignupPage() {
   const [password, setPassword] = useState("")
 
   return (
-    <div className="relative flex min-h-screen bg-[#1C1C1C]">
+    <div className="relative flex min-h-screen bg-[#0A0A0A]">
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 left-1/3 w-[600px] h-[600px] bg-[#6A0DAD]/6 rounded-full blur-[150px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[#6A0DAD]/4 rounded-full blur-[120px]" />
+        <div className="absolute top-1/3 left-1/3 w-[600px] h-[600px] bg-[#5A0B91]/6 rounded-full blur-[150px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-[#5A0B91]/4 rounded-full blur-[120px]" />
       </div>
 
       {/* Left Side - Branding (desktop only) */}
       <div className="relative hidden lg:flex lg:w-1/2 flex-col justify-center px-16 xl:px-24">
         {/* Grid pattern */}
-        <div className="absolute inset-0 opacity-30 bg-[linear-gradient(to_right,#6A0DAD12_1px,transparent_1px),linear-gradient(to_bottom,#6A0DAD12_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:linear-gradient(to_right,#000_50%,transparent_100%)]" />
+        <div className="absolute inset-0 opacity-30 bg-[linear-gradient(to_right,#5A0B9112_1px,transparent_1px),linear-gradient(to_bottom,#5A0B9112_1px,transparent_1px)] bg-[size:5rem_5rem] [mask-image:linear-gradient(to_right,#000_50%,transparent_100%)]" />
 
         <div className="relative">
           <Link href="/" className="inline-flex items-center gap-0 mb-12">
             <span className="text-3xl font-bold tracking-tight text-white">
               Shield
             </span>
-            <span className="text-3xl font-bold tracking-tight text-[#6A0DAD]">
+            <span className="text-3xl font-bold tracking-tight text-[#5A0B91]">
               CI
             </span>
           </Link>
 
           <h1 className="text-4xl font-semibold tracking-tighter text-white xl:text-5xl">
             Security on{" "}
-            <span className="bg-gradient-to-r from-[#6A0DAD] to-[#c9a0ff] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#5A0B91] to-[#b388e0] bg-clip-text text-transparent">
               autopilot
             </span>
           </h1>
@@ -64,7 +64,7 @@ export default function SignupPage() {
           <div className="mt-12 flex flex-col gap-5">
             {highlights.map((item) => (
               <div key={item.text} className="flex items-center gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#6A0DAD]/10 text-[#c9a0ff]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#5A0B91]/10 text-[#b388e0]">
                   <item.icon className="h-5 w-5" />
                 </div>
                 <span className="text-sm text-[#a0a0a0]">{item.text}</span>
@@ -83,7 +83,7 @@ export default function SignupPage() {
               <span className="text-2xl font-bold tracking-tight text-white">
                 Shield
               </span>
-              <span className="text-2xl font-bold tracking-tight text-[#6A0DAD]">
+              <span className="text-2xl font-bold tracking-tight text-[#5A0B91]">
                 CI
               </span>
             </Link>
@@ -99,11 +99,11 @@ export default function SignupPage() {
           </div>
 
           {/* Card */}
-          <div className="rounded-2xl border border-[#6A0DAD]/15 bg-[#1C1C1C]/80 backdrop-blur-xl p-8 shadow-[0_0_80px_rgba(106,13,173,0.08)]">
+          <div className="rounded-2xl border border-[#5A0B91]/15 bg-[#0A0A0A]/80 backdrop-blur-xl p-8 shadow-[0_0_80px_rgba(106,13,173,0.08)]">
             {/* GitHub OAuth first */}
             <button
               type="button"
-              className="flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-[#6A0DAD]/20 bg-transparent text-sm font-medium text-white transition-all hover:bg-[#6A0DAD]/5 hover:border-[#6A0DAD]/40"
+              className="flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-[#5A0B91]/20 bg-transparent text-sm font-medium text-white transition-all hover:bg-[#5A0B91]/5 hover:border-[#5A0B91]/40"
             >
               <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path
@@ -117,9 +117,9 @@ export default function SignupPage() {
 
             {/* Divider */}
             <div className="my-6 flex items-center gap-4">
-              <div className="h-px flex-1 bg-[#6A0DAD]/15" />
+              <div className="h-px flex-1 bg-[#5A0B91]/15" />
               <span className="text-xs text-[#555]">or</span>
-              <div className="h-px flex-1 bg-[#6A0DAD]/15" />
+              <div className="h-px flex-1 bg-[#5A0B91]/15" />
             </div>
 
             <form
@@ -139,7 +139,7 @@ export default function SignupPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Jane Doe"
-                  className="h-11 w-full rounded-lg border border-[#6A0DAD]/20 bg-[#1C1C1C] px-4 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#6A0DAD]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
+                  className="h-11 w-full rounded-lg border border-[#5A0B91]/20 bg-[#0A0A0A] px-4 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#5A0B91]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
                   required
                 />
               </div>
@@ -155,7 +155,7 @@ export default function SignupPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@company.com"
-                  className="h-11 w-full rounded-lg border border-[#6A0DAD]/20 bg-[#1C1C1C] px-4 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#6A0DAD]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
+                  className="h-11 w-full rounded-lg border border-[#5A0B91]/20 bg-[#0A0A0A] px-4 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#5A0B91]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
                   required
                 />
               </div>
@@ -172,7 +172,7 @@ export default function SignupPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Min 8 characters"
-                    className="h-11 w-full rounded-lg border border-[#6A0DAD]/20 bg-[#1C1C1C] px-4 pr-11 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#6A0DAD]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
+                    className="h-11 w-full rounded-lg border border-[#5A0B91]/20 bg-[#0A0A0A] px-4 pr-11 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#5A0B91]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
                     required
                     minLength={8}
                   />
@@ -194,7 +194,7 @@ export default function SignupPage() {
               {/* Submit */}
               <Button
                 type="submit"
-                className="mt-2 h-11 w-full rounded-lg bg-[#6A0DAD] text-white font-medium hover:bg-[#7b1fc4] hover:shadow-[0_0_30px_rgba(106,13,173,0.3)] transition-all"
+                className="mt-2 h-11 w-full rounded-lg bg-[#5A0B91] text-white font-medium hover:bg-[#7b1fc4] hover:shadow-[0_0_30px_rgba(106,13,173,0.3)] transition-all"
               >
                 Create Account
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -203,11 +203,11 @@ export default function SignupPage() {
 
             <p className="mt-5 text-center text-xs text-[#555] leading-relaxed">
               {"By signing up, you agree to our "}
-              <a href="#" className="text-[#6A0DAD] hover:text-[#c9a0ff] transition-colors">
+              <a href="#" className="text-[#5A0B91] hover:text-[#b388e0] transition-colors">
                 Terms
               </a>
               {" and "}
-              <a href="#" className="text-[#6A0DAD] hover:text-[#c9a0ff] transition-colors">
+              <a href="#" className="text-[#5A0B91] hover:text-[#b388e0] transition-colors">
                 Privacy Policy
               </a>
               .
@@ -219,7 +219,7 @@ export default function SignupPage() {
             Already have an account?{" "}
             <Link
               href="/login"
-              className="text-[#6A0DAD] font-medium hover:text-[#c9a0ff] transition-colors"
+              className="text-[#5A0B91] font-medium hover:text-[#b388e0] transition-colors"
             >
               Sign in
             </Link>

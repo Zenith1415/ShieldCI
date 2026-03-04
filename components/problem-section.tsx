@@ -10,7 +10,7 @@ const problems = [
       "Snyk, CodeQL, SonarQube find vulnerabilities but leave you to fix them manually. Security debt piles up sprint after sprint.",
     stat: "87%",
     statLabel: "of alerts ignored",
-    accentColor: "#6A0DAD",
+    accentColor: "#5A0B91",
   },
   {
     number: "02",
@@ -89,12 +89,12 @@ export function ProblemSection() {
       <div className="mx-auto max-w-7xl" ref={sectionRef}>
         {/* Section Header */}
         <div className="text-center mb-20">
-          <span className="inline-block text-sm font-medium uppercase tracking-widest text-[#6A0DAD] mb-4">
+          <span className="inline-block text-sm font-medium uppercase tracking-widest text-[#5A0B91] mb-4">
             The Problem
           </span>
           <h2 className="text-balance text-4xl font-semibold tracking-tighter text-white sm:text-5xl md:text-6xl">
             Security tools are{" "}
-            <span className="bg-gradient-to-r from-[#6A0DAD] to-[#c9a0ff] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#5A0B91] to-[#b388e0] bg-clip-text text-transparent">
               broken
             </span>
           </h2>
@@ -110,8 +110,8 @@ export function ProblemSection() {
           {problems.map((problem, i) => (
             <div
               key={problem.number}
-              className={`scroll-animate group relative rounded-2xl border border-[#ffffff08] bg-[#141414] overflow-hidden
-                transition-all duration-700 hover:border-[#6A0DAD]/30
+              className={`scroll-animate group relative rounded-2xl border border-[#ffffff08] bg-[#0f0f0f] overflow-hidden
+                transition-all duration-700 hover:border-[#5A0B91]/30
                 ${i === 1 ? "lg:translate-y-8" : ""}
                 ${i === 2 ? "lg:translate-y-4" : ""}
                 ${i === 3 ? "lg:translate-y-12" : ""}

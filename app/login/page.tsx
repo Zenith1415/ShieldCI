@@ -11,13 +11,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("")
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[#1C1C1C] px-6 py-12">
+    <div className="relative flex min-h-screen items-center justify-center bg-[#0A0A0A] px-6 py-12">
       {/* Background effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[#6A0DAD]/8 rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-[linear-gradient(to_top,#6A0DAD08,transparent)]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-[#5A0B91]/8 rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[400px] bg-[linear-gradient(to_top,#5A0B9108,transparent)]" />
         {/* Grid */}
-        <div className="absolute inset-0 opacity-40 bg-[linear-gradient(to_right,#6A0DAD15_1px,transparent_1px),linear-gradient(to_bottom,#6A0DAD15_1px,transparent_1px)] bg-[size:6rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_30%,#000_40%,transparent_100%)]" />
+        <div className="absolute inset-0 opacity-40 bg-[linear-gradient(to_right,#5A0B9115_1px,transparent_1px),linear-gradient(to_bottom,#5A0B9115_1px,transparent_1px)] bg-[size:6rem_5rem] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_30%,#000_40%,transparent_100%)]" />
       </div>
 
       <div className="relative w-full max-w-md">
@@ -27,7 +27,7 @@ export default function LoginPage() {
             <span className="text-2xl font-bold tracking-tight text-white">
               Shield
             </span>
-            <span className="text-2xl font-bold tracking-tight text-[#6A0DAD]">
+            <span className="text-2xl font-bold tracking-tight text-[#5A0B91]">
               CI
             </span>
           </Link>
@@ -37,7 +37,7 @@ export default function LoginPage() {
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-[#6A0DAD]/15 bg-[#1C1C1C]/80 backdrop-blur-xl p-8 shadow-[0_0_80px_rgba(106,13,173,0.08)]">
+        <div className="rounded-2xl border border-[#5A0B91]/15 bg-[#0A0A0A]/80 backdrop-blur-xl p-8 shadow-[0_0_80px_rgba(106,13,173,0.08)]">
           <form
             onSubmit={(e) => {
               e.preventDefault()
@@ -55,7 +55,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@company.com"
-                className="h-11 w-full rounded-lg border border-[#6A0DAD]/20 bg-[#1C1C1C] px-4 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#6A0DAD]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
+                className="h-11 w-full rounded-lg border border-[#5A0B91]/20 bg-[#0A0A0A] px-4 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#5A0B91]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
                 required
               />
             </div>
@@ -68,7 +68,7 @@ export default function LoginPage() {
                 </label>
                 <a
                   href="#"
-                  className="text-xs text-[#6A0DAD] hover:text-[#c9a0ff] transition-colors"
+                  className="text-xs text-[#5A0B91] hover:text-[#b388e0] transition-colors"
                 >
                   Forgot password?
                 </a>
@@ -80,7 +80,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="h-11 w-full rounded-lg border border-[#6A0DAD]/20 bg-[#1C1C1C] px-4 pr-11 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#6A0DAD]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
+                  className="h-11 w-full rounded-lg border border-[#5A0B91]/20 bg-[#0A0A0A] px-4 pr-11 text-sm text-white placeholder:text-[#555] outline-none transition-all focus:border-[#5A0B91]/50 focus:shadow-[0_0_20px_rgba(106,13,173,0.1)]"
                   required
                 />
                 <button
@@ -101,7 +101,7 @@ export default function LoginPage() {
             {/* Submit */}
             <Button
               type="submit"
-              className="mt-2 h-11 w-full rounded-lg bg-[#6A0DAD] text-white font-medium hover:bg-[#7b1fc4] hover:shadow-[0_0_30px_rgba(106,13,173,0.3)] transition-all"
+              className="mt-2 h-11 w-full rounded-lg bg-[#5A0B91] text-white font-medium hover:bg-[#7b1fc4] hover:shadow-[0_0_30px_rgba(106,13,173,0.3)] transition-all"
             >
               Sign In
               <ArrowRight className="ml-2 h-4 w-4" />
@@ -110,15 +110,15 @@ export default function LoginPage() {
 
           {/* Divider */}
           <div className="mt-6 flex items-center gap-4">
-            <div className="h-px flex-1 bg-[#6A0DAD]/15" />
+            <div className="h-px flex-1 bg-[#5A0B91]/15" />
             <span className="text-xs text-[#555]">or continue with</span>
-            <div className="h-px flex-1 bg-[#6A0DAD]/15" />
+            <div className="h-px flex-1 bg-[#5A0B91]/15" />
           </div>
 
           {/* GitHub OAuth */}
           <button
             type="button"
-            className="mt-6 flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-[#6A0DAD]/20 bg-transparent text-sm font-medium text-white transition-all hover:bg-[#6A0DAD]/5 hover:border-[#6A0DAD]/40"
+            className="mt-6 flex h-11 w-full items-center justify-center gap-3 rounded-lg border border-[#5A0B91]/20 bg-transparent text-sm font-medium text-white transition-all hover:bg-[#5A0B91]/5 hover:border-[#5A0B91]/40"
           >
             <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path
@@ -136,7 +136,7 @@ export default function LoginPage() {
           {"Don't have an account? "}
           <Link
             href="/signup"
-            className="text-[#6A0DAD] font-medium hover:text-[#c9a0ff] transition-colors"
+            className="text-[#5A0B91] font-medium hover:text-[#b388e0] transition-colors"
           >
             Sign up free
           </Link>
