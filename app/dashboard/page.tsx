@@ -155,23 +155,24 @@ export default function DashboardOverview() {
   const [scoreHistory, setScoreHistory] = useState<{commit: string; score: number}[]>([])
   const [recentActivity, setRecentActivity] = useState<any[]>([])
   const [stats, setStats] = useState({ totalVulns: 0, totalScans: 0, cleanScans: 0, issueScans: 0 })
+  const [repoStats, setRepoStats] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch("/api/dashboard/stats")
-      .then(res => res.json())
-      .then(data => {
-        setScoreHistory(data.scoreHistory || [])
-        setRecentActivity(data.recentActivity || [])
-        setStats({
-          totalVulns: data.totalVulns || 0,
-          totalScans: data.totalScans || 0,
-          cleanScans: data.cleanScans || 0,
-          issueScans: data.issueScans || 0,
-        })
+    Promise.all([
+      fetch("/api/dashboard/stats").then(r => r.json()),
+      fetch("/api/repos/stats").then(r => r.json()).catch(() => ({ repos: [] })),
+    ]).then(([data, repoData]) => {
+      setScoreHistory(data.scoreHistory || [])
+      setRecentActivity(data.recentActivity || [])
+      setStats({
+        totalVulns: data.totalVulns || 0,
+        totalScans: data.totalScans || 0,
+        cleanScans: data.cleanScans || 0,
+        issueScans: data.issueScans || 0,
       })
-      .catch(() => {})
-      .finally(() => setLoading(false))
+      setRepoStats(repoData.repos || [])
+    }).catch(() => {}).finally(() => setLoading(false))
   }, [])
 
   const securityScore = stats.totalScans > 0
@@ -486,6 +487,84 @@ export default function DashboardOverview() {
           </div>
         </div>
       </div>
+
+      {/* Per-repo security overview */}
+      {repoStats.length > 0 && (
+        <div style={{
+          background: "linear-gradient(135deg, rgba(106,13,173,0.1), rgba(10,0,20,0.6))",
+          border: "1px solid rgba(90,11,145,0.25)",
+          borderRadius: "16px",
+          padding: "24px",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px" }}>
+            <div>
+              <h2 style={{ fontSize: "16px", fontWeight: 700, color: "white", fontFamily: "'Georgia', serif", marginBottom: "4px" }}>
+                Repository Health
+              </h2>
+              <p style={{ fontSize: "12px", color: "rgba(150,100,220,0.5)", fontFamily: "'Trebuchet MS', sans-serif" }}>
+                Security scores per connected repository
+              </p>
+            </div>
+            <a href="/dashboard/repositories" style={{
+              fontSize: "11px", color: "rgba(168,85,247,0.7)", fontFamily: "'Trebuchet MS', sans-serif",
+              textDecoration: "none",
+            }}>View all →</a>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "12px" }}>
+            {repoStats.slice(0, 6).map((repo: any) => {
+              const scoreColor = repo.securityScore >= 80 ? "#22c55e" : repo.securityScore >= 60 ? "#a855f7" : repo.securityScore >= 40 ? "#eab308" : "#ef4444"
+              const repoName = repo.repo.split("/").pop() || repo.repo
+              return (
+                <a key={repo.repo} href={`/dashboard/repositories`} style={{
+                  display: "flex", alignItems: "center", gap: "14px",
+                  padding: "14px 16px",
+                  borderRadius: "12px",
+                  background: "rgba(106,13,173,0.05)",
+                  border: "1px solid rgba(90,11,145,0.15)",
+                  textDecoration: "none",
+                  transition: "all 0.15s ease",
+                }}>
+                  {/* Mini score ring */}
+                  <div style={{
+                    width: "40px", height: "40px", borderRadius: "50%",
+                    background: `conic-gradient(${scoreColor} ${repo.securityScore * 3.6}deg, rgba(255,255,255,0.06) 0deg)`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    flexShrink: 0,
+                  }}>
+                    <div style={{
+                      width: "32px", height: "32px", borderRadius: "50%", background: "#0a0015",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      <span style={{ fontSize: "12px", fontWeight: 700, color: scoreColor, fontFamily: "'Georgia', serif" }}>
+                        {repo.securityScore}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{
+                      fontSize: "13px", fontWeight: 600, color: "white", fontFamily: "'Trebuchet MS', sans-serif",
+                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: "4px",
+                    }}>{repoName}</p>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.3)" }}>
+                        {repo.vulnerabilities.total} vulns
+                      </span>
+                      <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.2)" }}>
+                        {repo.totalScans} scans
+                      </span>
+                      <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.2)" }}>
+                        {repo.lastScanAgo}
+                      </span>
+                    </div>
+                  </div>
+                </a>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

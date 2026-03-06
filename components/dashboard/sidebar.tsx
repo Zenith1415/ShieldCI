@@ -17,6 +17,7 @@ import {
 
 const navItems = [
   { label: "Overview",        href: "/dashboard",                  icon: LayoutDashboard },
+  { label: "Repositories",    href: "/dashboard/repositories",     icon: Shield          },
   { label: "Vulnerabilities", href: "/dashboard/vulnerabilities",  icon: ShieldAlert     },
   { label: "Fix PR Tracker",  href: "/dashboard/fix-pr-tracker",   icon: GitPullRequest  },
   { label: "Scan History",    href: "/dashboard/scan-history",     icon: Clock           },

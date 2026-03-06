@@ -61,6 +61,7 @@ export default function ConnectRepoPage() {
   const [initializing, setInitializing] = useState<string | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const [justInitialized, setJustInitialized] = useState<string | null>(null)
+  const [workflowStatus, setWorkflowStatus] = useState<Record<string, { pushed: boolean; error?: string }>>({})
   const searchRef = useRef<HTMLInputElement>(null)
 
   const fetchData = async () => {
@@ -93,12 +94,17 @@ export default function ConnectRepoPage() {
         body: JSON.stringify({ repoFullName: repo.fullName }),
       })
       if (!res.ok) throw new Error("Failed")
+      const data = await res.json()
       setRepos(prev => prev.map(r =>
         r.fullName === repo.fullName ? { ...r, isConnected: !r.isConnected } : r
       ))
       if (!repo.isConnected) {
         setJustInitialized(repo.fullName)
-        setTimeout(() => setJustInitialized(null), 3000)
+        setWorkflowStatus(prev => ({
+          ...prev,
+          [repo.fullName]: { pushed: data.workflowPushed, error: data.workflowError }
+        }))
+        setTimeout(() => setJustInitialized(null), 5000)
       }
     } catch (err) {
       console.error(err)
@@ -232,6 +238,16 @@ export default function ConnectRepoPage() {
                       </span>
                     )}
                     <CheckCircle2 size={13} color="#22c55e" />
+                    {workflowStatus[repo.fullName]?.pushed && (
+                      <span style={{ fontSize: "10px", padding: "1px 6px", borderRadius: "4px", background: "rgba(168,85,247,0.1)", color: "#a855f7", border: "1px solid rgba(168,85,247,0.2)" }}>
+                        ⚡ Workflow active
+                      </span>
+                    )}
+                    {workflowStatus[repo.fullName] && !workflowStatus[repo.fullName].pushed && (
+                      <span style={{ fontSize: "10px", padding: "1px 6px", borderRadius: "4px", background: "rgba(234,179,8,0.1)", color: "#eab308", border: "1px solid rgba(234,179,8,0.2)" }}>
+                        Workflow push failed
+                      </span>
+                    )}
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "3px" }}>
                     {repo.language && (
