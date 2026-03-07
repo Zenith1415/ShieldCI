@@ -1,0 +1,27 @@
+# ════════════════════════════════════════════════════════════
+#  ShieldCI — Docker Compose
+#  Run with: docker compose up --build
+#
+#  This scans the included tests/ vulnerable app by default.
+#  To scan YOUR repo, change the volume mount:
+#    volumes:
+#      - /path/to/your/repo:/workspace
+# ════════════════════════════════════════════════════════════
+
+services:
+  shieldci:
+    build:
+      context: .
+      dockerfile: Dockerfile.allinone
+    container_name: shieldci
+    environment:
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - SHIELDCI_LOCAL_TOOLS=1
+      - SHIELDCI_MCP_CMD=python3 /app/kali_mcp.py
+    volumes:
+      # Default: scan the included vulnerable test app
+      - ./tests:/workspace
+      # Output: reports written back to your host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    network_mode: host

@@ -236,8 +236,17 @@ fn flatten_codebase(dir: &str) -> String {
     full_code
 }
 
+fn get_ollama_url() -> String {
+    std::env::var("OLLAMA_HOST").unwrap_or_else(|_| "http://localhost:11434".to_string())
+}
+
+fn is_local_tools() -> bool {
+    std::env::var("SHIELDCI_LOCAL_TOOLS").unwrap_or_default() == "1"
+}
+
 async fn ask_llm(system_prompt: &str) -> ToolCall {
-    println!("Invoking ShieldCI LLM");
+    let ollama = get_ollama_url();
+    println!("Invoking ShieldCI LLM at {}", ollama);
     let client = Client::new();
     let req_body = serde_json::json!({
         "model": "llama3.1",
@@ -246,7 +255,8 @@ async fn ask_llm(system_prompt: &str) -> ToolCall {
         "format": "json"
     });
 
-    let res = client.post("http://localhost:11434/api/generate").json(&req_body).send().await.expect("Ollama error");
+    let url = format!("{}/api/generate", ollama.trim_end_matches('/'));
+    let res = client.post(&url).json(&req_body).send().await.expect("Ollama error");
     let res_json: serde_json::Value = res.json().await.unwrap();
     let response_text = res_json["response"].as_str().unwrap_or("{}");
     
@@ -266,12 +276,26 @@ async fn ask_llm(system_prompt: &str) -> ToolCall {
 
 async fn execute_mcp_tool_stdio(tool_call: &ToolCall) -> Result<String, Box<dyn std::error::Error>> {
     println!("Initiating MCP Handshake & Strike: {}", tool_call.tool);
-    
-    let mut child = Command::new("docker")
-        .args(["run", "-i", "--rm", "shieldci-kali-image"])
-        .stdin(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()?;
+
+    let local = is_local_tools();
+    let mut child = if local {
+        // All-in-one mode: kali tools installed locally, call kali_mcp.py directly
+        let mcp_path = std::env::var("SHIELDCI_MCP_CMD")
+            .unwrap_or_else(|_| "python3 /app/kali_mcp.py".to_string());
+        let parts: Vec<&str> = mcp_path.split_whitespace().collect();
+        Command::new(parts[0])
+            .args(&parts[1..])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()?
+    } else {
+        // Docker mode: spin up the Kali container
+        Command::new("docker")
+            .args(["run", "-i", "--rm", "shieldci-kali-image"])
+            .stdin(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()?
+    };
 
     let mut stdin = child.stdin.take().expect("Failed to open stdin");
     let stdout = child.stdout.take().expect("Failed to open stdout");
@@ -284,7 +308,13 @@ async fn execute_mcp_tool_stdio(tool_call: &ToolCall) -> Result<String, Box<dyn 
     reader.read_line(&mut line)?;
 
     // Step 2: Call Tool — nmap_scan uses "target" param, others use "url"
-    let target_url = tool_call.target.replace("127.0.0.1", "host.docker.internal");
+    // In local/all-in-one mode, tools and target share the same network — keep 127.0.0.1
+    // In docker mode, tools are in a separate container — rewrite to host.docker.internal
+    let target_url = if local {
+        tool_call.target.replace("host.docker.internal", "127.0.0.1")
+    } else {
+        tool_call.target.replace("127.0.0.1", "host.docker.internal")
+    };
     let mcp_args = if tool_call.tool == "nmap_scan" {
         serde_json::json!({ "target": target_url })
     } else {
@@ -304,6 +334,7 @@ async fn execute_mcp_tool_stdio(tool_call: &ToolCall) -> Result<String, Box<dyn 
 
 async fn generate_report(trace: &str, codebase: &str, success: bool) -> String {
     println!("Compiling final security assessment");
+    let ollama = get_ollama_url();
     let client = Client::new();
     let status = if success { "VULNERABILITY DISCOVERED" } else { "NO VULNERABILITIES DETECTED" };
     
@@ -366,7 +397,8 @@ IMPORTANT: You MUST include actual code snippets from the source code showing vu
     );
 
     let req_body = serde_json::json!({"model": "llama3.1", "prompt": prompt, "stream": false});
-    let res = client.post("http://localhost:11434/api/generate").json(&req_body).send().await.expect("Ollama error");
+    let url = format!("{}/api/generate", ollama.trim_end_matches('/'));
+    let res = client.post(&url).json(&req_body).send().await.expect("Ollama error");
     let res_json: serde_json::Value = res.json().await.unwrap();
     res_json["response"].as_str().unwrap_or("Report failed.").to_string()
 }
@@ -454,7 +486,13 @@ async fn main() {
     let _ = wait_for_target(&config.target_url, 15).await;
 
     let codebase = flatten_codebase(".");
-    let docker_url = config.target_url.replace("127.0.0.1", "host.docker.internal");
+    // In local mode tools are co-located — keep 127.0.0.1
+    // In docker mode tools need host.docker.internal to reach the host
+    let docker_url = if is_local_tools() {
+        config.target_url.clone()
+    } else {
+        config.target_url.replace("127.0.0.1", "host.docker.internal")
+    };
 
     // ── Generate dynamic test plan ──
     let test_plan = generate_test_plan(&shield_config, &docker_url);
