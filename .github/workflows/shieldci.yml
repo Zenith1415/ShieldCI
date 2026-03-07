@@ -2,7 +2,7 @@ name: ShieldCI Security Scan
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, master, fixed]
   pull_request:
     branches: [main, master]
   workflow_dispatch:
