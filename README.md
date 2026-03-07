@@ -251,60 +251,26 @@ ShieldCI generates two files in the target repo:
 
 ## Frontend — ShieldCI Dashboard
 
-ShieldCI comes with a companion **Next.js dashboard** ([Zenith1415/Shield-CI](https://github.com/Zenith1415/Shield-CI)) that gives you a full security operations view of your repositories. The engine pushes results to the dashboard API after every scan.
+The companion dashboard is at **[Zenith1415/Shield-CI](https://github.com/Zenith1415/Shield-CI)** — a Next.js app that visualizes scan results, tracks vulnerabilities, and manages connected repos.
 
-### Tech Stack
+### Connecting Engine → Dashboard
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | **Next.js 14** (App Router) |
-| Auth | **NextAuth.js** with GitHub OAuth |
-| Database | **MongoDB** (Mongoose ODM) |
-| UI | Custom components + Lucide icons + Recharts |
-
-### Dashboard Pages
-
-| Page | What It Shows |
-|------|--------------|
-| **Overview** | Security score gauge (0–100), score-over-time line chart, stat cards (vulns found, issue scans, total scans), recent activity feed, per-repo summary |
-| **Repositories** | All connected repos with security scores, severity breakdown bars, vuln counts (pending / fix PR raised / resolved), scan history sparklines |
-| **Vulnerabilities** | Filterable table of all detected vulnerabilities — filter by severity (Critical/High/Medium/Low), status (Pending/Fix PR Raised/Resolved), and repo |
-| **Fix PR Tracker** | Track auto-raised fix PRs — status (Open/Merged), branch, severity, time since raised |
-| **Scan History** | Full audit trail of every scan — commit, branch, duration, vulns found, status (Clean/Issues Found/Failed), per-repo color coding |
-| **Connect Repo** | Link GitHub repositories via OAuth — auto-provisions the workflow and secrets |
-| **Installation** | Step-by-step setup guide — connect GitHub, add self-hosted runner, configure workflow, open a PR |
-| **Settings** | Scan triggers (on push / on PR), auto-raise fix PRs, severity threshold, email & notification preferences, API key management |
-
-### How Results Flow
-
-```
-  Rust Engine                    Dashboard API                   MongoDB
-  ──────────                     ─────────────                   ───────
-  scan completes                       │                            │
-       │                               │                            │
-       ├─── POST /api/scans ──────────▶│── Scan.create() ─────────▶│
-       │    (report + vulns)           │── Vulnerability.insert() ─▶│
-       │                               │                            │
-       │                          Dashboard UI                      │
-       │                          ─────────────                     │
-       │                               │                            │
-       │                    GET /api/dashboard/stats ◀──────────────┤
-       │                    GET /api/repos/stats     ◀──────────────┤
-       │                    GET /api/vulnerabilities ◀──────────────┤
-       │                    GET /api/scans           ◀──────────────┤
-```
-
-### Pushing Results
+1. Clone and run the dashboard (see its README for setup)
+2. Set three env vars before running ShieldCI (or add them to your CI secrets):
 
 ```bash
-# After a scan, push results to the dashboard
-SHIELDCI_API_URL=http://localhost:3000 \
-SHIELDCI_API_KEY=your-secret-key \
-SHIELDCI_REPO=owner/repo \
+export SHIELDCI_API_URL=http://localhost:3000   # dashboard URL
+export SHIELDCI_API_KEY=your-secret-key         # matches the dashboard's key
+export SHIELDCI_REPO=owner/repo                 # e.g. Akshat-Raj/ShieldCI
+```
+
+3. After a scan completes, push the results:
+
+```bash
 python3 push_results.py
 ```
 
-In CI, this is handled automatically by the GitHub Actions workflow using a **self-hosted runner** — keeping everything local.
+In CI, this happens automatically via the GitHub Actions workflow — no manual step needed.
 
 ---
 
