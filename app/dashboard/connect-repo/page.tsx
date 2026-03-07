@@ -62,6 +62,7 @@ export default function ConnectRepoPage() {
   const [refreshing, setRefreshing] = useState(false)
   const [justInitialized, setJustInitialized] = useState<string | null>(null)
   const [workflowStatus, setWorkflowStatus] = useState<Record<string, { pushed: boolean; error?: string }>>({})
+  const [initError, setInitError] = useState<string | null>(null)
   const searchRef = useRef<HTMLInputElement>(null)
 
   const fetchData = async () => {
@@ -87,14 +88,15 @@ export default function ConnectRepoPage() {
 
   const handleInitialize = async (repo: Repo) => {
     setInitializing(repo.fullName)
+    setInitError(null)
     try {
       const res = await fetch("/api/repos/connect", {
         method: repo.isConnected ? "DELETE" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ repoFullName: repo.fullName }),
       })
-      if (!res.ok) throw new Error("Failed")
       const data = await res.json()
+      if (!res.ok) throw new Error(data.error || "Failed to connect repo")
       setRepos(prev => prev.map(r =>
         r.fullName === repo.fullName ? { ...r, isConnected: !r.isConnected } : r
       ))
@@ -104,10 +106,14 @@ export default function ConnectRepoPage() {
           ...prev,
           [repo.fullName]: { pushed: data.workflowPushed, error: data.workflowError }
         }))
+        if (data.workflowError) {
+          setInitError(`Repo connected but workflow push failed: ${data.workflowError}`)
+        }
         setTimeout(() => setJustInitialized(null), 5000)
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err)
+      setInitError(err.message || "Failed to initialize repo")
     } finally {
       setInitializing(null)
     }
@@ -202,6 +208,22 @@ export default function ConnectRepoPage() {
           </div>
         )}
       </div>
+
+      {/* Init error banner */}
+      {initError && (
+        <div style={{
+          marginBottom: "16px", padding: "10px 14px", borderRadius: "8px",
+          background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)",
+          display: "flex", alignItems: "center", gap: "8px", animation: "fadeIn 0.2s ease-out",
+        }}>
+          <AlertCircle size={14} color="#ef4444" />
+          <span style={{ fontSize: "13px", color: "#fca5a5", flex: 1 }}>{initError}</span>
+          <button onClick={() => setInitError(null)} style={{
+            background: "none", border: "none", color: "rgba(255,255,255,0.3)",
+            cursor: "pointer", fontSize: "16px", lineHeight: 1, padding: "2px",
+          }}>×</button>
+        </div>
+      )}
 
       {/* Already initialized section */}
       {connectedRepos.length > 0 && (

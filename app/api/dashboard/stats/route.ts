@@ -1,25 +1,48 @@
 import { NextRequest, NextResponse } from "next/server"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
 import connectDB from "@/lib/mongodb"
+import User from "@/models/User"
 import Scan from "@/models/Scan"
 import Vulnerability from "@/models/Vulnerability"
 
-// GET — dashboard overview stats
+// GET — dashboard overview stats (scoped to user's repos with data)
 export async function GET(req: NextRequest) {
   try {
     await connectDB()
 
+    // Get user's connected repos + repos that have scan data
+    let repoFilter: any = {}
+    try {
+      const session = await getServerSession(authOptions)
+      if (session?.user) {
+        const githubUsername = (session.user as any).githubUsername
+        const user = await User.findOne({ githubUsername })
+        const connectedRepos = user?.connectedRepos || []
+        // Also include repos that have scans (e.g. manually pushed results)
+        const scannedRepos = await Scan.distinct("repo")
+        const allRepos = [...new Set([...connectedRepos, ...scannedRepos])]
+        if (allRepos.length > 0) {
+          repoFilter = { repo: { $in: allRepos } }
+        }
+      }
+    } catch {
+      // Fall through to global stats if auth fails
+    }
+
     const [totalVulns, totalScans, recentScans, severityCounts, recentVulns] = await Promise.all([
-      Vulnerability.countDocuments({}),
-      Scan.countDocuments({}),
-      Scan.find({}).sort({ createdAt: -1 }).limit(10).lean(),
+      Vulnerability.countDocuments(repoFilter),
+      Scan.countDocuments(repoFilter),
+      Scan.find(repoFilter).sort({ createdAt: -1 }).limit(10).lean(),
       Vulnerability.aggregate([
+        { $match: repoFilter },
         { $group: { _id: "$severity", count: { $sum: 1 } } },
       ]),
-      Vulnerability.find({}).sort({ createdAt: -1 }).limit(6).lean(),
+      Vulnerability.find(repoFilter).sort({ createdAt: -1 }).limit(6).lean(),
     ])
 
-    const cleanScans = await Scan.countDocuments({ status: "Clean" })
-    const issueScans = await Scan.countDocuments({ status: "Issues Found" })
+    const cleanScans = await Scan.countDocuments({ ...repoFilter, status: "Clean" })
+    const issueScans = await Scan.countDocuments({ ...repoFilter, status: "Issues Found" })
 
     // Build score history from recent scans (simple heuristic)
     const scoreHistory = recentScans.reverse().map((scan: any, i: number) => {

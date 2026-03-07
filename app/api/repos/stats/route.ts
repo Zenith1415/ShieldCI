@@ -32,9 +32,14 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const repoFilter = searchParams.get("repo")
 
+    const connectedRepos = user?.connectedRepos || []
+    // Also include repos that have scan data
+    const scannedRepos = await Scan.distinct("repo")
+    const allRepos = [...new Set([...connectedRepos, ...scannedRepos])]
+
     const repos = repoFilter
-      ? user.connectedRepos.filter((r: string) => r === repoFilter)
-      : user.connectedRepos
+      ? allRepos.filter((r: string) => r === repoFilter)
+      : allRepos
 
     if (repos.length === 0) {
       return NextResponse.json({ repos: [] })

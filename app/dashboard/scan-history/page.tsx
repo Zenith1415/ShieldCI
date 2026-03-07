@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ScanLine, Clock, GitCommit, CheckCircle2, AlertTriangle, XCircle } from "lucide-react"
+import { ScanLine, Clock, GitCommit, CheckCircle2, AlertTriangle, XCircle, ChevronDown, ChevronUp, FileText } from "lucide-react"
 
 const statusConfig: Record<string, { color: string; bg: string; border: string; icon: any }> = {
   "Issues Found": { color: "#f97316", bg: "rgba(249,115,22,0.1)", border: "rgba(249,115,22,0.25)", icon: AlertTriangle },
@@ -22,9 +22,37 @@ function timeAgo(dateStr: string): string {
   return `${days} day${days > 1 ? "s" : ""} ago`
 }
 
+function escapeHtml(str: string): string {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
+}
+
+function formatReport(md: string): string {
+  // Convert markdown to safe HTML
+  let html = escapeHtml(md)
+  // Code blocks: ```lang\n...\n```
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_m, _lang, code) =>
+    `<pre style="background:rgba(106,13,173,0.15);border:1px solid rgba(90,11,145,0.25);border-radius:8px;padding:12px 16px;overflow-x:auto;font-size:12px;line-height:1.5;color:#c4b5fd;font-family:monospace;margin:8px 0">${code.trim()}</pre>`)
+  // Inline code
+  html = html.replace(/`([^`]+)`/g, '<code style="background:rgba(106,13,173,0.2);padding:1px 5px;border-radius:3px;font-family:monospace;font-size:12px;color:#c4b5fd">$1</code>')
+  // Bold
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong style="color:#e9d5ff">$1</strong>')
+  // Headers
+  html = html.replace(/^### (.+)$/gm, '<h4 style="color:#c084fc;font-size:14px;margin:12px 0 6px 0">$1</h4>')
+  html = html.replace(/^## (.+)$/gm, '<h3 style="color:#c084fc;font-size:15px;margin:14px 0 6px 0">$1</h3>')
+  // List items
+  html = html.replace(/^(\s*)\*\s+/gm, '$1• ')
+  html = html.replace(/^(\s*)- /gm, '$1• ')
+  // Numbered items
+  html = html.replace(/^(\d+)\.\s+/gm, '<strong style="color:#a78bfa">$1.</strong> ')
+  // Line breaks
+  html = html.replace(/\n/g, '<br/>')
+  return html
+}
+
 export default function ScanHistoryPage() {
   const [scans, setScans] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [expandedScan, setExpandedScan] = useState<string | null>(null)
 
   useEffect(() => {
     fetch("/api/scans")
@@ -40,6 +68,7 @@ export default function ScanHistoryPage() {
           duration: s.duration || "",
           status: s.status || "Clean",
           triggered: s.createdAt ? timeAgo(s.createdAt) : "",
+          reportMarkdown: s.reportMarkdown || "",
         }))
         setScans(mapped)
       })
@@ -87,9 +116,13 @@ export default function ScanHistoryPage() {
           const sta = statusConfig[scan.status]
           const StatusIcon = sta.icon
           const repoColor = repoColors[scan.repo] || "#a855f7"
+          const isExpanded = expandedScan === scan.id
+          const hasReport = !!scan.reportMarkdown
           return (
-            <div key={scan.id}
-              style={{ background: "linear-gradient(135deg, rgba(106,13,173,0.08), rgba(10,0,20,0.5))", border: "1px solid rgba(90,11,145,0.18)", borderRadius: "14px", padding: "16px 20px", display: "flex", alignItems: "center", gap: "16px", transition: "border-color 0.15s" }}
+            <div key={scan.id} style={{ display: "flex", flexDirection: "column" }}>
+            <div
+              style={{ background: "linear-gradient(135deg, rgba(106,13,173,0.08), rgba(10,0,20,0.5))", border: "1px solid rgba(90,11,145,0.18)", borderRadius: isExpanded ? "14px 14px 0 0" : "14px", padding: "16px 20px", display: "flex", alignItems: "center", gap: "16px", transition: "border-color 0.15s", cursor: hasReport ? "pointer" : "default" }}
+              onClick={() => hasReport && setExpandedScan(isExpanded ? null : scan.id)}
               onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(168,85,247,0.3)"}
               onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(90,11,145,0.18)"}
             >
@@ -131,6 +164,36 @@ export default function ScanHistoryPage() {
 
               {/* Time */}
               <span style={{ fontSize: "11px", color: "rgba(150,100,220,0.4)", fontFamily: "'Trebuchet MS', sans-serif", flexShrink: 0, minWidth: "70px", textAlign: "right" }}>{scan.triggered}</span>
+
+              {/* Report toggle */}
+              {hasReport && (
+                <div style={{ display: "flex", alignItems: "center", gap: "4px", padding: "5px 10px", borderRadius: "8px", background: "rgba(168,85,247,0.1)", border: "1px solid rgba(168,85,247,0.2)", flexShrink: 0 }}>
+                  <FileText size={12} color="#a855f7" />
+                  {isExpanded ? <ChevronUp size={12} color="#a855f7" /> : <ChevronDown size={12} color="#a855f7" />}
+                </div>
+              )}
+            </div>
+
+            {/* Expanded report panel */}
+            {isExpanded && scan.reportMarkdown && (
+              <div style={{
+                background: "rgba(10,0,20,0.6)",
+                border: "1px solid rgba(90,11,145,0.18)",
+                borderTop: "none",
+                borderRadius: "0 0 14px 14px",
+                padding: "20px 24px",
+                maxHeight: "500px",
+                overflowY: "auto",
+              }}>
+                <div style={{ fontSize: "11px", color: "rgba(168,85,247,0.5)", fontFamily: "'Trebuchet MS', sans-serif", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "12px" }}>
+                  Security Report
+                </div>
+                <div
+                  style={{ fontSize: "13px", lineHeight: "1.7", color: "rgba(220,200,255,0.8)", fontFamily: "'Trebuchet MS', sans-serif", whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                  dangerouslySetInnerHTML={{ __html: formatReport(scan.reportMarkdown) }}
+                />
+              </div>
+            )}
             </div>
           )
         })}

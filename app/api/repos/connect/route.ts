@@ -7,8 +7,11 @@ import User from "@/models/User"
 const WORKFLOW_YAML = `name: ShieldCI Security Scan
 
 on:
+  push:
+    branches: [main, master]
   pull_request:
     branches: [main, master]
+  workflow_dispatch:
 
 jobs:
   shieldci-scan:
@@ -19,13 +22,20 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
 
-      - name: Get PR metadata
+      - name: Gather metadata
         id: meta
         run: |
           echo "repo=\${{ github.repository }}" >> "\$GITHUB_OUTPUT"
-          echo "branch=\${{ github.head_ref }}" >> "\$GITHUB_OUTPUT"
-          echo "commit=\${{ github.event.pull_request.head.sha }}" >> "\$GITHUB_OUTPUT"
-          echo "commit_msg=\$(git log -1 --pretty=%s 2>/dev/null || echo 'PR scan')" >> "\$GITHUB_OUTPUT"
+          if [ "\${{ github.event_name }}" = "pull_request" ]; then
+            echo "branch=\${{ github.head_ref }}" >> "\$GITHUB_OUTPUT"
+            echo "commit=\${{ github.event.pull_request.head.sha }}" >> "\$GITHUB_OUTPUT"
+            echo "trigger=PR" >> "\$GITHUB_OUTPUT"
+          else
+            echo "branch=\${{ github.ref_name }}" >> "\$GITHUB_OUTPUT"
+            echo "commit=\${{ github.sha }}" >> "\$GITHUB_OUTPUT"
+            echo "trigger=\${{ github.event_name }}" >> "\$GITHUB_OUTPUT"
+          fi
+          echo "commit_msg=\$(git log -1 --pretty=%s 2>/dev/null || echo 'scan')" >> "\$GITHUB_OUTPUT"
 
       - name: Check ShieldCI engine is available
         run: |
@@ -57,19 +67,20 @@ jobs:
       - name: Push results to ShieldCI dashboard
         if: always()
         env:
-          SHIELDCI_API_URL: \${{ secrets.SHIELDCI_API_URL }}
-          SHIELDCI_API_KEY: \${{ secrets.SHIELDCI_API_KEY }}
           SHIELDCI_REPO: \${{ steps.meta.outputs.repo }}
           SHIELDCI_BRANCH: \${{ steps.meta.outputs.branch }}
           SHIELDCI_COMMIT: \${{ steps.meta.outputs.commit }}
           SHIELDCI_COMMIT_MSG: \${{ steps.meta.outputs.commit_msg }}
           SHIELDCI_DURATION: \${{ steps.scan.outputs.duration }}
-          SHIELDCI_TRIGGERED_BY: PR
-          SHIELDCI_RESULTS_FILE: \$HOME/Desktop/ShieldCI/tests/shield_results.json
-        run: python3 "\$HOME/Desktop/ShieldCI/push_results.py"
+          SHIELDCI_TRIGGERED_BY: \${{ steps.meta.outputs.trigger }}
+        run: |
+          export SHIELDCI_API_URL="PLACEHOLDER_API_URL"
+          export SHIELDCI_API_KEY="PLACEHOLDER_API_KEY"
+          export SHIELDCI_RESULTS_FILE="\$HOME/Desktop/ShieldCI/tests/shield_results.json"
+          python3 "\$HOME/Desktop/ShieldCI/push_results.py"
 
       - name: Post scan summary as PR comment
-        if: always()
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
           script: |
@@ -90,19 +101,44 @@ jobs:
 
 async function pushWorkflowToRepo(token: string, repoFullName: string): Promise<{ success: boolean; error?: string }> {
   const [owner, repo] = repoFullName.split("/")
-  const filePath = ".github/workflows/shieldci.yml"
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`
-  const headers = {
-    Authorization: `Bearer ${token}`,
+
+  // Inject the actual API URL and key into the workflow YAML
+  const shieldApiUrl = process.env.NEXTAUTH_URL || "http://localhost:3000"
+  const apiKey = process.env.SHIELDCI_API_KEY || ""
+  const finalYaml = WORKFLOW_YAML
+    .replace("PLACEHOLDER_API_URL", shieldApiUrl)
+    .replace("PLACEHOLDER_API_KEY", apiKey)
+
+  const readHeaders = {
+    Authorization: `token ${token}`,
     Accept: "application/vnd.github.v3+json",
     "User-Agent": "ShieldCI-App",
+  }
+  const writeHeaders = {
+    ...readHeaders,
     "Content-Type": "application/json",
   }
 
-  // Check if file already exists (to get its sha for update)
+  // 1. Verify we can access the repo and get default branch
+  const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers: readHeaders })
+  if (!repoRes.ok) {
+    const err = await repoRes.json().catch(() => ({}))
+    return { success: false, error: `Cannot access repo (${repoRes.status}): ${err.message || "check token permissions"}` }
+  }
+  const repoData = await repoRes.json()
+  const defaultBranch = repoData.default_branch || "main"
+
+  // 2. Check if repo is empty (size 0 = no commits, can't push via Contents API)
+  if (repoData.size === 0) {
+    return { success: false, error: "Repo is empty (no commits). Push an initial commit first, then re-initialize." }
+  }
+
+  // 3. Check if workflow file already exists (to get sha for update)
+  const filePath = ".github/workflows/shieldci.yml"
+  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`
   let existingSha: string | undefined
   try {
-    const checkRes = await fetch(apiUrl, { headers })
+    const checkRes = await fetch(`${apiUrl}?ref=${defaultBranch}`, { headers: readHeaders })
     if (checkRes.ok) {
       const existing = await checkRes.json()
       existingSha = existing.sha
@@ -111,11 +147,12 @@ async function pushWorkflowToRepo(token: string, repoFullName: string): Promise<
     // file doesn't exist, that's fine
   }
 
-  const content = Buffer.from(WORKFLOW_YAML).toString("base64")
+  // 4. Push/update the workflow file
+  const content = Buffer.from(finalYaml).toString("base64")
   const body: any = {
     message: "ci: add ShieldCI security scan workflow",
     content,
-    branch: "main",
+    branch: defaultBranch,
   }
   if (existingSha) {
     body.sha = existingSha
@@ -124,14 +161,35 @@ async function pushWorkflowToRepo(token: string, repoFullName: string): Promise<
 
   const res = await fetch(apiUrl, {
     method: "PUT",
-    headers,
+    headers: writeHeaders,
     body: JSON.stringify(body),
   })
 
   if (!res.ok) {
     const errData = await res.json().catch(() => ({}))
-    return { success: false, error: errData.message || `GitHub API error ${res.status}` }
+    return { success: false, error: `Push failed (${res.status}): ${errData.message || "Unknown error"}` }
   }
+
+  // 5. Trigger the workflow immediately via workflow_dispatch
+  try {
+    // Wait a moment for GitHub to register the new workflow file
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    const dispatchRes = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/actions/workflows/shieldci.yml/dispatches`,
+      {
+        method: "POST",
+        headers: writeHeaders,
+        body: JSON.stringify({ ref: defaultBranch }),
+      }
+    )
+    if (!dispatchRes.ok) {
+      // Not a fatal error — workflow was pushed, just couldn't trigger immediately
+      console.log(`Workflow dispatch failed (${dispatchRes.status}), will run on next push/PR`)
+    }
+  } catch {
+    // Non-fatal
+  }
+
   return { success: true }
 }
 
